@@ -1,5 +1,5 @@
 module.exports = {
-  keys: "super_api",
+  keys: "super_api_dev",
   sequelize: {
     dialect: "mysql",
     host: "127.0.0.1",

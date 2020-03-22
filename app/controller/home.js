@@ -1,8 +1,8 @@
-const Controller = require("egg").Controller;
+const Controller = require("./base");
 
 class HomeController extends Controller {
   async index() {
-    this.ctx.body = "Hello world";
+    this.success("Hello world");
   }
 }
 
