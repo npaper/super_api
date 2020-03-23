@@ -92,6 +92,8 @@ class MyController extends Controller {
     roleObj.permissions.push(this.genrole("user", "用户管理"));
     roleObj.permissions.push(this.genrole("support", "超级模块"));
     roleObj.permissions.push(this.genrole("home", "主页"));
+    roleObj.permissions.push(this.genrole("manager", "数据管理"));
+    roleObj.permissions.push(this.genrole("user", "用户管理"));
 
     userInfo.role = roleObj;
     this.success(userInfo);
@@ -144,6 +146,28 @@ class MyController extends Controller {
         },
         component: "Home",
         path: "/home/index"
+      },
+      {
+        name: "Manager",
+        parentId: 0,
+        id: 6,
+        meta: {
+          title: "数据管理",
+          show: true
+        },
+        component: "RouteView",
+        redirect: "/manager/user/list"
+      },
+      {
+        name: "User",
+        parentId: 6,
+        id: 7,
+        meta: {
+          title: "用户管理",
+          show: true
+        },
+        component: "User",
+        path: "/manager/user/list"
       }
     ];
 
