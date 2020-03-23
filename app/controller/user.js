@@ -11,19 +11,20 @@ function arr2map(arr) {
 class MyController extends Controller {
   async list() {
     const ctx = this.ctx;
-    const current = this.toInt(ctx.query.current) || 0;
-    const offset = this.toInt(ctx.query.offset) || 20;
+
+    const current = this.toInt((ctx.body || {}).current || 0);
+    const offset = this.toInt((ctx.body || {}).pageSize || 20);
     const limit = current * offset;
     const result = await ctx.service.baseUser.list(offset, limit);
     var ids = [];
     var names = {};
 
     result.forEach(v => {
-      ids.push(v.id);
+      v.creator_id && ids.push(v.creator_id);
     });
 
     if (ids.length) {
-      names = arr2map(await ctx.service.baseUser.getUserNames([1, 2, 3]));
+      names = arr2map(await ctx.service.baseUser.getUserNames(ids));
     }
     const total = await ctx.service.baseUser.total();
 

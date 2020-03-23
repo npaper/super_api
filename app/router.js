@@ -17,4 +17,7 @@ module.exports = app => {
   router.get("/user/nav", controller.demo.nav);
 
   router.post("/user/list", controller.user.list);
+  router.post("/nav/list", controller.permission.navList);
+  router.post("/role/list", controller.permission.roleList);
+  router.post("/permission/list", controller.permission.permissionList);
 };
