@@ -60,3 +60,5 @@ Options:
   --version  Show version number                                         [boolean]
   --help     Show help                                                   [boolean]
 ```
+
+http://127.0.0.1:12333

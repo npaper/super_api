@@ -101,7 +101,7 @@ class MyController extends Controller {
     if (ids.length) {
       names = arr2map(await ctx.service.baseUser.getUserNames(ids));
     }
-    const total = await ctx.service.baseUser.total();
+    const total = 0; // await ctx.service.baseUser.total();
 
     this.success({
       total,

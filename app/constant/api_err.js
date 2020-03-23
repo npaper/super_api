@@ -11,13 +11,6 @@ class ApiErr {
     }
     return new ApiErr(a, this.code);
   }
-
-  value() {
-    return {
-      errMsg: this.errMsg,
-      code: this.code
-    };
-  }
 }
 
 module.exports = {
