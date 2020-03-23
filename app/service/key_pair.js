@@ -1,8 +1,10 @@
 const Service = require("egg").Service;
 
-class KeypairService extends Service {
+class MyService extends Service {
   show(key) {
-    return this.ctx.model.KeyPair.findByPk(key);
+    const ctx = this.ctx;
+    const userId = ctx.session.userId;
+    return ctx.model.KeyPair.findOne({ key, user_id: userId });
   }
 
   async store(key, value) {
@@ -10,7 +12,9 @@ class KeypairService extends Service {
     if (pair) {
       return await pair.update({ value });
     } else {
-      return await this.ctx.model.KeyPair.create({ key, value });
+      const ctx = this.ctx;
+      const userId = ctx.session.userId;
+      return await ctx.model.KeyPair.create({ key, value, user_id: userId });
     }
   }
 
@@ -29,4 +33,4 @@ class KeypairService extends Service {
   }
 }
 
-module.exports = KeypairService;
+module.exports = MyService;

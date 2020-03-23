@@ -20,6 +20,7 @@
   "homepage": "https://github.com/xiaoyifan6/super_api#readme",
   "dependencies": {
     "egg": "^2.26.0",
+    "egg-cors": "^2.2.3",
     "egg-sequelize": "^5.2.1",
     "mysql2": "^2.1.0"
   },

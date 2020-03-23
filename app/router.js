@@ -9,4 +9,7 @@ module.exports = app => {
   router.delete("/key_pair/remove/:key", controller.keyPair.remove);
 
   router.get("/key_pair/list", controller.keyPair.list);
+
+  router.get("/version", controller.demo.version);
+  router.post("/auth/login", controller.demo.login);
 };

@@ -13,7 +13,8 @@ module.exports = app => {
     sex: INTEGER,
     password: STRING(64),
     phone_code: STRING(11),
-    third_code: STRING(45)
+    third_code: STRING(45),
+    avatar: STRING(64)
   });
 
   return BaseUser;

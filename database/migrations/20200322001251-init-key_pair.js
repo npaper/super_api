@@ -2,12 +2,13 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    const { DATE, STRING } = Sequelize;
+    const { DATE, INTEGER, STRING } = Sequelize;
     return queryInterface.createTable("key_pairs", {
-      key: { type: STRING(12), primaryKey: true },
+      key: { type: STRING(24), primaryKey: true },
       value: STRING(200),
       created_at: DATE,
-      updated_at: DATE
+      updated_at: DATE,
+      user_id: INTEGER
     });
   },
 
