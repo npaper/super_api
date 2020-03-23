@@ -34,7 +34,7 @@ class MyController extends Controller {
       records: result.map(v => {
         return {
           id: v.id,
-          name: v.account_name,
+          name: v.name,
           describe: v.describe,
           status: v.status,
           creatorId: v.creator_id,
@@ -72,7 +72,7 @@ class MyController extends Controller {
       records: result.map(v => {
         return {
           id: v.id,
-          name: v.account_name,
+          name: v.name,
           describe: v.describe,
           creatorId: v.creator_id,
           creatorName: (names[v.creator_id] || {}).account_name,
@@ -109,7 +109,6 @@ class MyController extends Controller {
       records: result.map(v => {
         return {
           id: v.key,
-          name: v.account_name,
           describe: v.describe,
           parentKey: v.parent_key,
           creatorId: v.creator_id,
