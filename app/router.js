@@ -12,4 +12,7 @@ module.exports = app => {
 
   router.get("/version", controller.demo.version);
   router.post("/auth/login", controller.demo.login);
+  router.post("/auth/logout", controller.demo.logout);
+  router.get("/user/info", controller.demo.info);
+  router.get("/user/nav", controller.demo.nav);
 };
