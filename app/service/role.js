@@ -18,17 +18,7 @@ class MyService extends Service {
       };
     }
 
-    return ctx.model.Role.findAll(query);
-  }
-
-  async total() {
-    var results = this.app.model.query("select count(*) as total from roles", {
-      type: sequelize.QueryTypes.SELECT
-    });
-    if (results.length) {
-      return results[0].total;
-    }
-    return 0;
+    return ctx.model.Role.findAndCountAll(query);
   }
 
   async store(role) {
@@ -55,20 +45,16 @@ class MyService extends Service {
   }
 
   async remove(id) {
-    var list = await this.ctx.model.RolePermission.findAll({
-      where: {
-        role_id: id
-      }
-    });
-    console.log(list);
     var p0 = await this.ctx.model.Role.findByPk(id);
     if (p0) {
-      p0.destroy();
+      await p0.destroy();
 
-      // 递归删除
-      for (let i = 0; i < list.length; i++) {
-        await list[i].destroy();
-      }
+      await this.ctx.model.RolePermission.destroy({
+        where: {
+          role_id: id
+        }
+      });
+      console.log(list);
       return true;
     }
     return false;

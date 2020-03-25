@@ -32,4 +32,9 @@ module.exports = app => {
     "/permission/remove/:id",
     controller.permission.removePermission
   );
+  router.post("/action/add", controller.permission.storeAction);
+  router.delete(
+    "/action/remove/:permission_id/:key",
+    controller.permission.removeAction
+  );
 };

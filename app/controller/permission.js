@@ -1,13 +1,5 @@
 const Controller = require("./base");
-const { isEmptyString } = require("../utils/check");
-
-function arr2map(arr) {
-  var map = {};
-  arr.forEach(v => {
-    map[v.id] = v;
-  });
-  return map;
-}
+const { isEmptyString, arr2map } = require("../utils/check");
 
 class MyController extends Controller {
   // 角色列表
@@ -23,19 +15,18 @@ class MyController extends Controller {
     var ids = [];
     var names = {};
 
-    result.forEach(v => {
+    result.rows.forEach(v => {
       v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
     });
 
     if (ids.length) {
       names = arr2map(await ctx.service.baseUser.getUserNames(ids));
     }
-    const total = await ctx.service.baseUser.total();
 
     this.success({
-      total,
+      total: result.count,
       current: current,
-      records: result.map(v => {
+      records: result.rows.map(v => {
         return {
           id: v.id,
           name: v.name,
@@ -60,21 +51,29 @@ class MyController extends Controller {
     const nameOrid = (ctx.request.body || {}).id;
     const result = await ctx.service.permission.list(offset, limit, nameOrid);
     var ids = [];
+    var permissionIds = [];
+
     var names = {};
 
-    result.forEach(v => {
+    result.rows.forEach(v => {
       v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
+      permissionIds.push(v.id);
     });
 
     if (ids.length) {
       names = arr2map(await ctx.service.baseUser.getUserNames(ids));
     }
-    const total = await ctx.service.baseUser.total();
+
+    var actionMap = arr2map(
+      await ctx.service.permission.listActions(permissionIds),
+      "permission_id",
+      true
+    );
 
     this.success({
-      total,
+      total: result.count,
       current: current,
-      records: result.map(v => {
+      records: result.rows.map(v => {
         return {
           id: v.id,
           name: v.name,
@@ -83,7 +82,8 @@ class MyController extends Controller {
           creatorName: (names[v.creator_id] || {}).account_name,
           creatorNickName: (names[v.creator_id] || {}).nick_name,
           createAt: v.createdAt,
-          updateAt: v.updatedAt
+          updateAt: v.updatedAt,
+          actions: actionMap[v.id]||[]
         };
       })
     });
@@ -209,6 +209,40 @@ class MyController extends Controller {
     this.success("ok");
   }
 
+  // 添加action
+  async storeAction() {
+    const ctx = this.ctx;
+    var {
+      key,
+      permission_id,
+      name,
+      describe,
+      path,
+      default_value
+    } = ctx.request.body;
+    if (isEmptyString(key)) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("key"));
+      return;
+    } else if (isEmptyString(name)) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("name"));
+      return;
+    } else if (isEmptyString(permission_id)) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("permission_id"));
+      return;
+    }
+
+    describe = describe || "";
+    ctx.service.permission.storeAction({
+      key,
+      permission_id,
+      name,
+      describe,
+      path,
+      default_value: default_value || false
+    });
+    this.success("ok");
+  }
+
   // 删除权限
   async removePermission() {
     const ctx = this.ctx;
@@ -217,6 +251,24 @@ class MyController extends Controller {
       return;
     }
     this.success(await ctx.service.permission.remove(ctx.params.id));
+  }
+
+  // 删除action
+  async removeAction() {
+    const ctx = this.ctx;
+    if (!ctx.params.key) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("key"));
+      return;
+    } else if (!ctx.params.permission_id) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("permission_id"));
+      return;
+    }
+    this.success(
+      await ctx.service.permission.removeAction(
+        ctx.params.key,
+        ctx.params.permission_id
+      )
+    );
   }
 }
 

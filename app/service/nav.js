@@ -6,19 +6,6 @@ class MyService extends Service {
     return ctx.model.Nav.findAll({});
   }
 
-  async total() {
-    var results = this.app.model.query(
-      "select count(*) as total from tb_navs",
-      {
-        type: sequelize.QueryTypes.SELECT
-      }
-    );
-    if (results.length) {
-      return results[0].total;
-    }
-    return 0;
-  }
-
   async store(nav) {
     console.log(nav);
     var nav0 = await this.ctx.model.Nav.findByPk(nav.key);
@@ -38,7 +25,7 @@ class MyService extends Service {
     console.log(list);
     var nav0 = await this.ctx.model.Nav.findByPk(key);
     if (nav0) {
-      nav0.destroy();
+      await nav0.destroy();
 
       // 递归删除
       for (let i = 0; i < list.length; i++) {

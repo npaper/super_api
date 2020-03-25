@@ -4,7 +4,12 @@ class MyService extends Service {
   show(key) {
     const ctx = this.ctx;
     const userId = ctx.session.userId;
-    return ctx.model.KeyPair.findOne({ key, user_id: userId });
+    return ctx.model.KeyPair.findOne({
+      where: {
+        key,
+        user_id: userId
+      }
+    });
   }
 
   async store(key, value) {

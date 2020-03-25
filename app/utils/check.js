@@ -11,7 +11,23 @@ function isEmptyString(str) {
   return !str || str.trim().length === 0;
 }
 
+function arr2map(arr, key, arrayVal) {
+  var map = {};
+  key = key || "id";
+  if (!arr) return map;
+  arr.forEach(v => {
+    if (arrayVal) {
+      !map[v[key]] && (map[v[key]] = []);
+      map[v[key]].push(v);
+    } else {
+      map[v[key]] = v;
+    }
+  });
+  return map;
+}
+
 module.exports = {
   isEmail,
-  isEmptyString
+  isEmptyString,
+  arr2map
 };

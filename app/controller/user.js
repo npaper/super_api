@@ -33,9 +33,9 @@ class MyController extends Controller {
     }
     var user;
     if (isEmail(username)) {
-      user = await ctx.service.baseUser.getUserByAccount(username, password);
-    } else {
       user = await ctx.service.baseUser.getUserByEmail(username, password);
+    } else {
+      user = await ctx.service.baseUser.getUserByAccount(username, password);
     }
     if (!user) {
       this.error(ApiError.PARAM_NOTFOUND, 500);
@@ -75,19 +75,18 @@ class MyController extends Controller {
     var ids = [];
     var names = {};
 
-    result.forEach(v => {
+    result.rows.forEach(v => {
       v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
     });
 
     if (ids.length) {
       names = arr2map(await ctx.service.baseUser.getUserNames(ids));
     }
-    const total = await ctx.service.baseUser.total();
 
     this.success({
-      total,
+      total: result.count,
       current: current,
-      records: result.map(v => {
+      records: result.rows.map(v => {
         return {
           id: v.id,
           name: v.account_name,

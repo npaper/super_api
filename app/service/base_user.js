@@ -4,20 +4,33 @@ const sequelize = require("sequelize");
 class MyService extends Service {
   list(limit, offset, searchParams) {
     const ctx = this.ctx;
-    return ctx.model.BaseUser.findAll({
+    return ctx.model.BaseUser.findAndCountAll({
       limit,
       offset
     });
   }
 
   getUserNames(ids) {
-    return this.app.model.query(
-      "select id, account_name, nick_name from base_users where id in (:ids)",
-      {
-        replacements: { ids: ids },
-        type: sequelize.QueryTypes.SELECT
+    return this.ctx.model.BaseUser.findAll({
+      attributes: {
+        exclude: [
+          "created_at",
+          "updated_at",
+          "password",
+          "sex",
+          "avatar",
+          "status",
+          "creator_id",
+          "role_id",
+          "email"
+        ]
+      },
+      where: {
+        id: {
+          [sequelize.Op.in]: ids
+        }
       }
-    );
+    });
   }
 
   getUserById(userId) {
@@ -28,30 +41,21 @@ class MyService extends Service {
   getUserByAccount(accountName, password) {
     const ctx = this.ctx;
     return ctx.model.BaseUser.findOne({
-      account_name: accountName,
-      password
+      where: {
+        account_name: accountName,
+        password
+      }
     });
   }
 
   getUserByEmail(email, password) {
     const ctx = this.ctx;
     return ctx.model.BaseUser.findOne({
-      email,
-      password
-    });
-  }
-
-  async total() {
-    var results = this.app.model.query(
-      "select count(*) as total from base_users",
-      {
-        type: sequelize.QueryTypes.SELECT
+      where: {
+        email,
+        password
       }
-    );
-    if (results.length) {
-      return results[0].total;
-    }
-    return 0;
+    });
   }
 }
 
