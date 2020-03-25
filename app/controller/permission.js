@@ -16,7 +16,10 @@ class MyController extends Controller {
     const current = this.toInt((ctx.request.body || {}).current || 0);
     const offset = this.toInt((ctx.request.body || {}).pageSize || 20);
     const limit = current * offset;
-    const result = await ctx.service.role.list(offset, limit);
+
+    const nameOrid = (ctx.request.body || {}).id;
+
+    const result = await ctx.service.role.list(offset, limit, nameOrid);
     var ids = [];
     var names = {};
 
@@ -54,7 +57,8 @@ class MyController extends Controller {
     const current = this.toInt((ctx.request.body || {}).current || 0);
     const offset = this.toInt((ctx.request.body || {}).pageSize || 20);
     const limit = current * offset;
-    const result = await ctx.service.permission.list(offset, limit);
+    const nameOrid = (ctx.request.body || {}).id;
+    const result = await ctx.service.permission.list(offset, limit, nameOrid);
     var ids = [];
     var names = {};
 
@@ -119,6 +123,7 @@ class MyController extends Controller {
     });
   }
 
+  // 添加菜单项
   async addNav() {
     const ctx = this.ctx;
     var { key, describe, parentKey } = ctx.request.body;
@@ -140,6 +145,7 @@ class MyController extends Controller {
     this.success("ok");
   }
 
+  // 删除菜单项
   async removeNav() {
     const ctx = this.ctx;
     if (!ctx.params.key) {
@@ -147,6 +153,70 @@ class MyController extends Controller {
       return;
     }
     this.success(await ctx.service.nav.remove(ctx.params.key));
+  }
+
+  // 添加角色
+  async addRole() {
+    const ctx = this.ctx;
+    var { id, describe, name } = ctx.request.body;
+    if (isEmptyString(id)) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("id"));
+      return;
+    } else if (isEmptyString(name)) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("name"));
+      return;
+    }
+
+    describe = describe || "";
+    ctx.service.role.store({
+      id,
+      describe,
+      name,
+      creator_id: ctx.session.userId
+    });
+    this.success("ok");
+  }
+
+  // 删除角色
+  async removeRole() {
+    const ctx = this.ctx;
+    if (!ctx.params.id) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("id"));
+      return;
+    }
+    this.success(await ctx.service.role.remove(ctx.params.id));
+  }
+
+  // 添加权限
+  async addPermission() {
+    const ctx = this.ctx;
+    var { id, describe, name } = ctx.request.body;
+    if (isEmptyString(id)) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("id"));
+      return;
+    } else if (isEmptyString(name)) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("name"));
+      return;
+    }
+
+    describe = describe || "";
+    ctx.service.permission.store({
+      id,
+      describe,
+      name,
+      creator_id: ctx.session.userId
+    });
+    this.success("ok");
+  }
+
+  // 删除权限
+  async removePermission() {
+    const ctx = this.ctx;
+    if (!ctx.params.id) {
+      this.error(this.apiErr().PARAM_NOTFOUND.format("id"));
+      return;
+    }
+    this.success(await ctx.service.permission.remove(ctx.params.id));
   }
 }
 

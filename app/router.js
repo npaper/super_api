@@ -23,5 +23,13 @@ module.exports = app => {
   router.delete("/nav/remove/:key", controller.permission.removeNav);
 
   router.post("/role/list", controller.permission.roleList);
+  router.post("/role/add", controller.permission.addRole);
+  router.delete("/role/remove/:id", controller.permission.removeRole);
+
   router.post("/permission/list", controller.permission.permissionList);
+  router.post("/permission/add", controller.permission.addPermission);
+  router.delete(
+    "/permission/remove/:id",
+    controller.permission.removePermission
+  );
 };
