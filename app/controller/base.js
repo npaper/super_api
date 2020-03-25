@@ -1,4 +1,5 @@
 const Controller = require("egg").Controller;
+const ApiError = require("../constant/api_err");
 
 class BaseController extends Controller {
   success(data, status) {
@@ -22,6 +23,10 @@ class BaseController extends Controller {
     if (typeof str === "number") return str;
     if (!str) return str;
     return parseInt(str, 10) || 0;
+  }
+
+  apiErr() {
+    return ApiError;
   }
 }
 

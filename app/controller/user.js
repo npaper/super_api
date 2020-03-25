@@ -1,4 +1,5 @@
 const Controller = require("./base");
+// https://www.npmjs.com/package/token
 const token = require("token");
 const ApiError = require("../constant/api_err");
 
@@ -75,7 +76,7 @@ class MyController extends Controller {
     var names = {};
 
     result.forEach(v => {
-      v.creator_id && ids.push(v.creator_id);
+      v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
     });
 
     if (ids.length) {
