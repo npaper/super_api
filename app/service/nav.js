@@ -3,10 +3,7 @@ const Service = require("egg").Service;
 class MyService extends Service {
   list(limit, offset, searchParams) {
     const ctx = this.ctx;
-    return ctx.model.Nav.findAll({
-      limit,
-      offset
-    });
+    return ctx.model.Nav.findAll({});
   }
 
   async total() {

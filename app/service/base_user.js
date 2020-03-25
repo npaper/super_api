@@ -20,6 +20,27 @@ class MyService extends Service {
     );
   }
 
+  getUserById(userId) {
+    const ctx = this.ctx;
+    return ctx.model.BaseUser.findByPk(userId);
+  }
+
+  getUserByAccount(accountName, password) {
+    const ctx = this.ctx;
+    return ctx.model.BaseUser.findOne({
+      account_name: accountName,
+      password
+    });
+  }
+
+  getUserByEmail(email, password) {
+    const ctx = this.ctx;
+    return ctx.model.BaseUser.findOne({
+      email,
+      password
+    });
+  }
+
   async total() {
     var results = this.app.model.query(
       "select count(*) as total from base_users",

@@ -1,4 +1,5 @@
 const Controller = require("./base");
+const ApiError = require("../constant/api_err");
 
 class MyController extends Controller {
   async version() {
@@ -62,14 +63,26 @@ class MyController extends Controller {
   }
 
   async info() {
+    const ctx = this.ctx;
+    const user_id = this.toInt(ctx.session.userId);
+    if (!user_id) {
+      this.error(ApiError.NO_PERMISSION, 500);
+      return;
+    }
+    var user = await ctx.service.baseUser.getUserById(user_id);
+    if (!user) {
+      this.error(ApiError.NO_PERMISSION, 500);
+      ctx.session.userId = "";
+      return;
+    }
+
     const userInfo = {
-      id: "4291d7da9005377ec9aec4a71ea837f",
-      name: "小白",
-      username: "admin",
-      avatar: "/avatar2.jpg",
-      status: 1,
-      creatorId: "admin",
-      roleId: "admin",
+      id: user.id,
+      name: user.nick_name,
+      username: user.account_name,
+      avatar: user.avatar,
+      status: user.status,
+      roleId: user.role_id,
       role: {}
     };
 
