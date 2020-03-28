@@ -21,8 +21,17 @@ class BaseController extends Controller {
 
   toInt(str) {
     if (typeof str === "number") return str;
+    if (Array.isArray(str)) {
+      return str.map(v => this.toInt(v));
+    }
     if (!str) return str;
     return parseInt(str, 10) || 0;
+  }
+
+  str2Array(str) {
+    if (Array.isArray(str)) return str;
+    if (!str || str.trim().length === 0) return [];
+    return str.split(",");
   }
 
   apiErr() {

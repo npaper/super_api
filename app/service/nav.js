@@ -3,7 +3,13 @@ const Service = require("egg").Service;
 class MyService extends Service {
   list() {
     const ctx = this.ctx;
-    return ctx.model.Nav.findAll({});
+    return ctx.model.Nav.findAll({
+      include: {
+        model: ctx.model.BaseUser,
+        as: "buser",
+        attributes: ["account_name", "nick_name"]
+      }
+    });
   }
 
   async store(nav) {

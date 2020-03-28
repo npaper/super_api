@@ -22,5 +22,14 @@ module.exports = app => {
     updated_at: DATE
   });
 
+  BaseUser.associate = function() {
+    app.model.BaseUser.hasOne(app.model.BaseUser, {
+      foreignKey: "creator_id",
+      as: "buser"
+    });
+
+    // app.model.BaseUser.hasOne(app.model.Role, { foreignKey: "role_id" });
+  };
+
   return BaseUser;
 };

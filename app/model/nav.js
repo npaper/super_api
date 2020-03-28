@@ -10,5 +10,16 @@ module.exports = app => {
     created_at: DATE,
     updated_at: DATE
   });
+
+  Model.associate = function() {
+    app.model.Nav.belongsTo(app.model.BaseUser, {
+      foreignKey: "creator_id",
+      as: "buser"
+    });
+
+    // app.model.Nav.hasOne(app.model.BaseUser, { foreignKey: "creator_id" });
+    // app.model.Nav.hasOne(app.model.Nav, { foreignKey: "parent_key" });
+  };
+
   return Model;
 };

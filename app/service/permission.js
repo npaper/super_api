@@ -8,7 +8,16 @@ class MyService extends Service {
     var query = {
       limit,
       offset,
-      order: [["updated_at", "DESC"]]
+      order: [["updated_at", "DESC"]],
+      include: {
+        model: ctx.model.BaseUser,
+        as: "buser",
+        attributes: ["account_name", "nick_name"]
+      },
+      include: {
+        model: ctx.model.PermissionAction,
+        as: "actions",
+      },
     };
     if (searchParam && searchParam.trim().length > 0) {
       query.where = {
@@ -68,22 +77,28 @@ class MyService extends Service {
     return false;
   }
 
-  async remove(id) {
-    var p0 = await this.ctx.model.Permission.findByPk(id);
-    if (p0) {
-      await p0.destroy();
-      await this.ctx.model.RolePermission.destroy({
-        where: {
-          permission_id: id
+  async remove(ids) {
+    await this.ctx.model.Permission.destroy({
+      where: {
+        id: {
+          [sequelize.Op.in]: ids
         }
-      });
-      await this.ctx.model.PermissionAction.destroy({
-        where: {
-          permission_id
+      }
+    });
+    await this.ctx.model.RolePermission.destroy({
+      where: {
+        permission_id: {
+          [sequelize.Op.in]: ids
         }
-      });
-      return true;
-    }
+      }
+    });
+    await this.ctx.model.PermissionAction.destroy({
+      where: {
+        permission_id: {
+          [sequelize.Op.in]: ids
+        }
+      }
+    });
     return false;
   }
 }

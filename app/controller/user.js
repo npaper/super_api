@@ -2,6 +2,7 @@ const Controller = require("./base");
 // https://www.npmjs.com/package/token
 const token = require("token");
 const ApiError = require("../constant/api_err");
+const md5 = require("md5");
 
 token.defaults.secret = "super_api";
 token.defaults.timeStep = 3 * 60; // 3分钟
@@ -33,9 +34,12 @@ class MyController extends Controller {
     }
     var user;
     if (isEmail(username)) {
-      user = await ctx.service.baseUser.getUserByEmail(username, password);
+      user = await ctx.service.baseUser.getUserByEmail(username, md5(password));
     } else {
-      user = await ctx.service.baseUser.getUserByAccount(username, password);
+      user = await ctx.service.baseUser.getUserByAccount(
+        username,
+        md5(password)
+      );
     }
     if (!user) {
       this.error(ApiError.PARAM_NOTFOUND, 500);
@@ -72,16 +76,16 @@ class MyController extends Controller {
     const offset = this.toInt((ctx.request.body || {}).pageSize || 20);
     const limit = current * offset;
     const result = await ctx.service.baseUser.list(offset, limit);
-    var ids = [];
-    var names = {};
+    // var ids = [];
+    // var names = {};
 
-    result.rows.forEach(v => {
-      v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
-    });
+    // result.rows.forEach(v => {
+    //   v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
+    // });
 
-    if (ids.length) {
-      names = arr2map(await ctx.service.baseUser.getUserNames(ids));
-    }
+    // if (ids.length) {
+    //   names = arr2map(await ctx.service.baseUser.getUserNames(ids));
+    // }
 
     this.success({
       total: result.count,
@@ -96,8 +100,8 @@ class MyController extends Controller {
           status: v.status,
           birthday: v.birthday,
           creatorId: v.creator_id,
-          creatorName: (names[v.creator_id] || {}).account_name,
-          creatorNickName: (names[v.creator_id] || {}).nick_name,
+          creatorName: v.buser.account_name ,// (names[v.creator_id] || {}).account_name,
+          creatorNickName: v.buser.nick_name ,// (names[v.creator_id] || {}).nick_name,
           roleId: v.role_id,
           email: v.email,
           createAt: v.createdAt,

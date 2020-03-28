@@ -11,5 +11,32 @@ module.exports = app => {
     created_at: DATE,
     updated_at: DATE
   });
+
+  Model.associate = function() {
+
+    app.model.Role.belongsTo(app.model.BaseUser, {
+      foreignKey: "creator_id",
+      as: "buser"
+    });
+
+    app.model.Role.belongsToMany(app.model.Permission, {
+      through: {
+        model: app.model.RolePermission,
+        unique: false
+      },
+      foreignKey: "role_id",
+      constraints: false
+    });
+
+    // app.model.RolePermission.belongsTo(app.model.Role, {
+    //   foreignKey: "role_id"
+    // });
+
+    // app.model.Role.hasMany(app.model.RolePermission, {
+    //   foreignKey: "role_id",
+    //   targetKey: "id"
+    // });
+  };
+
   return Model;
 };

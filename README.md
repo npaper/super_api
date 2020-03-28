@@ -1,20 +1,20 @@
 # super_api
-eggjs开发后端http服务
 
+eggjs 开发后端 http 服务
 
 ```js
-var csrftoken = Cookies.get('csrfToken');
+var csrftoken = Cookies.get("csrfToken");
 
 function csrfSafeMethod(method) {
   // these HTTP methods do not require CSRF protection
-  return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
 }
 $.ajaxSetup({
   beforeSend: function(xhr, settings) {
     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-      xhr.setRequestHeader('x-csrf-token', csrftoken);
+      xhr.setRequestHeader("x-csrf-token", csrftoken);
     }
-  },
+  }
 });
 ```
 
@@ -61,4 +61,15 @@ Options:
   --help     Show help                                                   [boolean]
 ```
 
+easyMonitor 性能优化：
 http://127.0.0.1:12333
+
+sequelize 管理查询——一对一关联查询：https://segmentfault.com/a/1190000016210754?utm_medium=referral&utm_source=tuicool
+
+```
+A.belongsTo(B,{ foreignKey: 'a_id', as: 'B0' })
+A的a_id关联B的id
+
+A.hasOne(B,{ foreignKey: 'b_id', as: 'B0' })
+A的id关联B的b_id
+```

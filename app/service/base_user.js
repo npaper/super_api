@@ -5,8 +5,14 @@ class MyService extends Service {
   list(limit, offset, searchParams) {
     const ctx = this.ctx;
     return ctx.model.BaseUser.findAndCountAll({
+      include: {
+        model: ctx.model.BaseUser,
+        as: "buser",
+        attributes: ["account_name", "nick_name"]
+      },
       limit,
-      offset
+      offset,
+      order: [["updated_at", "DESC"]]
     });
   }
 

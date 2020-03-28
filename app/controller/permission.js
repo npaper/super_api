@@ -12,16 +12,16 @@ class MyController extends Controller {
     const nameOrid = (ctx.request.body || {}).id;
 
     const result = await ctx.service.role.list(offset, limit, nameOrid);
-    var ids = [];
-    var names = {};
+    // var ids = [];
+    // var names = {};
 
-    result.rows.forEach(v => {
-      v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
-    });
+    // result.rows.forEach(v => {
+    //   v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
+    // });
 
-    if (ids.length) {
-      names = arr2map(await ctx.service.baseUser.getUserNames(ids));
-    }
+    // if (ids.length) {
+    //   names = arr2map(await ctx.service.baseUser.getUserNames(ids));
+    // }
 
     this.success({
       total: result.count,
@@ -33,8 +33,8 @@ class MyController extends Controller {
           describe: v.describe,
           status: v.status,
           creatorId: v.creator_id,
-          creatorName: (names[v.creator_id] || {}).account_name,
-          creatorNickName: (names[v.creator_id] || {}).nick_name,
+          creatorName: (v.buser || {}).account_name,
+          creatorNickName: (v.buser || {}).nick_name,
           createAt: v.createdAt,
           updateAt: v.updatedAt
         };
@@ -50,25 +50,6 @@ class MyController extends Controller {
     const limit = current * offset;
     const nameOrid = (ctx.request.body || {}).id;
     const result = await ctx.service.permission.list(offset, limit, nameOrid);
-    var ids = [];
-    var permissionIds = [];
-
-    var names = {};
-
-    result.rows.forEach(v => {
-      v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
-      permissionIds.push(v.id);
-    });
-
-    if (ids.length) {
-      names = arr2map(await ctx.service.baseUser.getUserNames(ids));
-    }
-
-    var actionMap = arr2map(
-      await ctx.service.permission.listActions(permissionIds),
-      "permission_id",
-      true
-    );
 
     this.success({
       total: result.count,
@@ -79,11 +60,11 @@ class MyController extends Controller {
           name: v.name,
           describe: v.describe,
           creatorId: v.creator_id,
-          creatorName: (names[v.creator_id] || {}).account_name,
-          creatorNickName: (names[v.creator_id] || {}).nick_name,
+          creatorName: (v.buser || {}).account_name,
+          creatorNickName: (v.buser || {}).nick_name,
           createAt: v.createdAt,
           updateAt: v.updatedAt,
-          actions: actionMap[v.id]||[]
+          actions: v.actions // actionMap[v.id] || []
         };
       })
     });
@@ -93,20 +74,9 @@ class MyController extends Controller {
   async navList() {
     const ctx = this.ctx;
     const result = await ctx.service.nav.list();
-    var ids = [];
-    var names = {};
-
-    result.forEach(v => {
-      v.creator_id && ids.indexOf(v.creator_id) < 0 && ids.push(v.creator_id);
-    });
-
-    if (ids.length) {
-      names = arr2map(await ctx.service.baseUser.getUserNames(ids));
-    }
-    const total = 0; // await ctx.service.baseUser.total();
 
     this.success({
-      total,
+      total: 0,
       current: 0,
       records: result.map(v => {
         return {
@@ -114,8 +84,8 @@ class MyController extends Controller {
           describe: v.describe,
           parentKey: v.parent_key,
           creatorId: v.creator_id,
-          creatorName: (names[v.creator_id] || {}).account_name,
-          creatorNickName: (names[v.creator_id] || {}).nick_name,
+          creatorName: (v.buser || {}).account_name,
+          creatorNickName: (v.buser || {}).nick_name,
           createAt: v.createdAt,
           updateAt: v.updatedAt
         };
@@ -184,7 +154,7 @@ class MyController extends Controller {
       this.error(this.apiErr().PARAM_NOTFOUND.format("id"));
       return;
     }
-    this.success(await ctx.service.role.remove(ctx.params.id));
+    this.success(await ctx.service.role.remove(this.str2Array(ctx.params.id)));
   }
 
   // 添加权限
@@ -246,11 +216,13 @@ class MyController extends Controller {
   // 删除权限
   async removePermission() {
     const ctx = this.ctx;
-    if (!ctx.params.id) {
+    if (isEmptyString(ctx.params.id)) {
       this.error(this.apiErr().PARAM_NOTFOUND.format("id"));
       return;
     }
-    this.success(await ctx.service.permission.remove(ctx.params.id));
+    this.success(
+      await ctx.service.permission.remove(this.str2Array(ctx.params.id))
+    );
   }
 
   // 删除action
